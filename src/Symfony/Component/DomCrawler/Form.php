@@ -172,6 +172,16 @@ class Form extends Link implements \ArrayAccess
             if (!empty($qs)) {
                 parse_str($qs, $expandedValue);
                 $varName = substr($name, 0, strlen(key($expandedValue)));
+
+                array_walk_recursive(
+                    $expandedValue,
+                    function (&$value, $key) {
+                        if (is_numeric($value) && in_array($key, ['size', 'error'], true)) {
+                            $value = (int)$value;
+                        }
+                    }
+                );
+
                 $values = array_replace_recursive($values, array($varName => current($expandedValue)));
             }
         }
